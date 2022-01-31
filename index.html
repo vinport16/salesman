@@ -1,0 +1,25 @@
+<html>
+<head>
+  <title>Graf</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <div id="canvasparent" class="graphcontainer">
+    <canvas id="canvas"></canvas>
+  </div>
+  <div id="dock" class="dock">
+    <span class="label">distance:</span> <span id='distance' class='distance'>0</span><br>
+    <span class="label">best:</span> <span id='best' class='best'></span><br>
+    <div class="buttonbox">
+      <button id="clear" type="button" class="clear">clear</button>
+      <button id="info" type="button" class="info">info</button>
+      <button id="restore" type="button" class="restore" disabled>restore</button>
+    </div>
+  </div>
+</body>
+<script type="text/javascript" src="prng.js"></script>
+<script type="text/javascript" src="draw.js"></script>
+<script type="text/javascript" src="vectors.js"></script>
+<script type="text/javascript" src="script.js"></script>
+</html>

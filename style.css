@@ -1,0 +1,142 @@
+:root {
+    --dot-solo:#FFCA3A;
+    --dot-inpath:#6A4C93;
+    --dot-selected:#8AC926;
+    --dot-end:#FF595E;
+    --line-color:#1982C4;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #FFF;
+  font-family: sans-serif;
+}
+
+.graphcontainer {
+  width: 50vh;
+  height: 85vh;
+  margin: auto;
+  padding: 0;
+  background-color: #00f009;
+  position: relative;
+}
+
+canvas {
+  background-color: #FFF;
+}
+
+.dot {
+  width: 6vh;
+  height: 6vh;
+  display: block;
+  border-radius: 50%;
+}
+
+.selected {
+  background-color: var(--dot-selected);
+  box-shadow: inset 0px 0px 0px 1vh var(--line-color);
+}
+
+.inpath {
+  background-color: var(--dot-inpath);
+  box-shadow: inset 0px 0px 0px 1vh var(--line-color);
+  color: #FFF;
+}
+
+.solo {
+  background-color: var(--dot-solo);
+  box-shadow: inset 0px 0px 0px 1vh var(--dot-selected);
+ }
+
+.end {
+  background-color: var(--dot-end);
+  box-shadow: inset 0px 0px 0px 1vh var(--line-color);
+}
+
+.dottext {
+  margin: 0;
+  color: inherit;
+  font-weight: bold;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  font-size: 2vh;
+}
+
+.dock {
+  width: 50vh;
+  height: 15vh;
+  margin: auto;
+  padding: 0.25vh;
+  position: relative;
+  font-size: 3vh;
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+.label {
+  width: 12vh;
+  display: inline-block;
+}
+
+.buttonbox {
+  padding: 0;
+  text-align: center;
+}
+
+.clear {
+  font-size: inherit;
+  width: 15vh;
+  height: 5vh;
+  display: inline;
+}
+
+.info {
+  font-size: inherit;
+  width: 15vh;
+  height: 5vh;
+  display: inline;
+}
+
+.restore {
+  font-size: inherit;
+  width: 15vh;
+  height: 5vh;
+  display: inline;
+}
+
+.fading {
+    -webkit-animation-duration: 10s;
+    -webkit-animation-name: fading;
+    animation-duration: 10s;
+    animation-name: fading;
+}
+@-webkit-keyframes fading {
+    from {
+        color: red;
+        font-weight: bold;
+    }
+    to {
+        color: black;
+        font-weight: regular;
+    }
+}
+@keyframes fading {
+    from {
+        color: red;
+        font-weight: bold;
+    }
+    to {
+        color: black;
+        font-weight: regular;
+    }
+}
+
+
+html {
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
