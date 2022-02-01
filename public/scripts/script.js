@@ -5,27 +5,29 @@ var current_distance = document.getElementById("distance");
 var bestscore = document.getElementById("best");
 var clearbutton = document.getElementById("clear");
 var restorebutton = document.getElementById("restore");
-var alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','@','#','$','%','^','&','*','<','>','?','|'];
-let seed = Math.floor(Math.random()*2000000000)
-var rng = new PRNG(seed);
-var canvas_height = 85; // in vh (from style.css)
-var canvas_width = 50;   // in vh (from style.css)
-var worldwidth = canvas_width * 2;
-var worldheight = canvas_height * 2;
-var dotradius = 6;
+const alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','@','#','$','%','^','&','*','<','>','?','|'];
+const puzzleName = (new URLSearchParams(window.location.search)).get('puzzle');
+const seed = puzzleName.hashCode();
+const rng = new PRNG(seed);
+const canvas_height = 85; // in vh (from style.css)
+const canvas_width = 50;   // in vh (from style.css)
+const worldwidth = canvas_width * 2;
+const worldheight = canvas_height * 2;
+const dotradius = 6;
 var scale_factor = canvas.width/worldwidth; // reset in adjust_canvas
 var lineWidth = canvas.width/50; // reset in adjust_canvas
-var lineColor = "#1982C4";
-var dotInPath = "inpath";
-var dotSolo = "solo";
-var dotSelected = "selected";
-var dotEnd = "end";
+const lineColor = "#1982C4";
+const dotInPath = "inpath";
+const dotSolo = "solo";
+const dotSelected = "selected";
+const dotEnd = "end";
+
 // minimum number of dots that can be placed within the boundaries of the world
 // that would make it impossible to place another dot without overlapping.
 // calculated by using https://www.engineeringtoolbox.com/circles-within-rectangle-d_1905.html
 // with canvas height, width, and dotradius * 4 (dots can be 4 radius away and effectively
 // prevent a third dot from being placed between them) (28)
-var numdots = Math.floor(rng.next(19,26));
+const numdots = Math.floor(rng.next(19,26));
 //numdots = 5;
 var dots = [];
 var linestate = {
@@ -62,7 +64,8 @@ var linestate = {
       this.register_solution();
     }
   },
-  register_solution: function(){
+  toString: function(){
+    // assumes this is a valid loop
     // order the attempt: start at A, and flip if
     // the second element is later than the last element
     let idx = this.line.indexOf(this.line.find(dot => dot.element.children[0].innerText == "A"));
@@ -72,15 +75,19 @@ var linestate = {
     if(this.line[1].element.children[0].innerText > this.line[this.line.length-1].element.children[0].innerText){
       this.line.reverse();
     }
-    let attemptstring = this.line.map(dot => dot.element.children[0].innerText).join("");
-    length = this.current_length();
+    return this.line.map(dot => dot.element.children[0].innerText).join("");
+  },
+  register_solution: function(){
+    let attemptstring = this.toString();
+    let length = this.current_length();
     this.attempts[attemptstring] = length;
-    attemptstring = round(length) + "[" + attemptstring + "]";
     if(length < this.best){
       flashScore(round(length));
       this.best = length;
       // shallow copy
       this.beststate = [...this.line];
+      // write to local storage
+      writeBestScoreToStorage(puzzleName, length, attemptstring);
     }
     restorebutton.disabled = false;
   },
@@ -156,16 +163,6 @@ var setDotColor = function(dot, className){
   dot.element.classList.add(className);
 }
 
-var adjust_canvas = function(){
-  canvas.width = canvas.parentElement.clientWidth;
-  canvas.height = canvas.parentElement.clientHeight;
-  scale_factor = canvas.width/worldwidth;
-  lineWidth = canvas.width/18;
-  drawState(linestate, dots);
-}
-adjust_canvas();
-window.onResize = adjust_canvas;
-
 var createDot = function(p, text){
   let dot = document.createElement("span");
   dot.className = "dot";
@@ -183,6 +180,27 @@ var createDot = function(p, text){
 function distance(v1, v2){
   return Math.sqrt( (v1.x-v2.x)*(v1.x-v2.x) + (v1.y-v2.y)*(v1.y-v2.y) );
 }
+
+function flashScore(newbest){
+  bestscore.innerText = newbest;
+	bestscore.classList.remove("fading");
+  bestscore.offsetWidth;
+  bestscore.classList.add("fading");
+}
+
+var adjust_canvas = function(){
+  canvas.width = canvas.parentElement.clientWidth;
+  canvas.height = canvas.parentElement.clientHeight;
+  scale_factor = canvas.width/worldwidth;
+  lineWidth = canvas.width/18;
+  drawState(linestate, dots);
+}
+adjust_canvas();
+window.onResize = adjust_canvas;
+
+
+
+
 
 var dot_overlaps = function(newdot, otherdots){
   for(let i = 0; i < otherdots.length; i++){
@@ -213,9 +231,16 @@ for(let i = 0; i < numdots; i++){
   canvasparent.appendChild(dot);
 }
 
-function flashScore(newbest){
-  bestscore.innerText = newbest;
-	bestscore.classList.remove("fading");
-  bestscore.offsetWidth;
-  bestscore.classList.add("fading");
+// check if a best score was stored
+let best = readBestScoreFromStorage(puzzleName);
+if(best.score){
+  bestscore.innerText = round(best.score);
+  linestate.best = best.score;
+  // rebuild sequence to store as linestate.beststate
+  linestate.beststate = [];
+  for(let i = 0; i < best.sequence.length; i++){
+    let dot = dots.find(dot => dot.element.children[0].innerText == best.sequence[i]);
+    linestate.beststate.push(dot);
+  }
+  restorebutton.disabled = false;
 }
