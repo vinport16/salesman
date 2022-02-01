@@ -34,7 +34,6 @@ function readBestScoreFromStorage(gameName){
 function writeBestScoreToStorage(gameName, score, sequence_string){
   let oldBest= readData(gameName);
   // check that the current high score is not blank, wrong version, or better
-  console.log(!oldBest, !current(oldBest.version), oldBest.score > score);
   if( !oldBest || !current(oldBest.version) || oldBest.score > score){
     let newBest = {score: score, sequence: sequence_string, version: current_version};
     writeData(gameName, newBest);
