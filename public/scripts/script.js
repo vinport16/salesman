@@ -243,4 +243,6 @@ if(best.score){
     linestate.beststate.push(dot);
   }
   restorebutton.disabled = false;
+}else{
+  restorebutton.disabled = true;
 }

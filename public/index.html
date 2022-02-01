@@ -5,12 +5,37 @@
 </head>
 <body>
   <meta name="viewport" content="width=device-width, user-scalable=no">
-  <div id="canvasparent" class="graphcontainer">
-    <canvas id="canvas"></canvas>
-  </div>
-  <div id="dock" class="dock">
-    <span class="label">distance:</span> <span id='distance' class='distance'>0</span><br>
-    <span class="label">best:</span> <span id='best' class='best'></span><br>
+  <div class="graphcontainer">
+
+    <h3>Salesman</h3>
+    The object of this game is to create the shortest circuit that connects all of the points.
+    This is a <a href="wikipedia.org/wiki/Travelling_salesman_problem">famous type of problem</a> that is difficult even for computers.
+    <br><br>
+    Pick a puzzle. Try to reach or improve the best score.
+    <br><br>
+
+    <table id="puzzleList" class="puzzle-list">
+     <tr>
+       <th></th>
+       <th>You</th>
+       <th>Best</th>
+     </tr>
+     <tr>
+       <td><a href="/game.html?puzzle=hello">hello</a></td>
+       <td>500.92</td>
+       <td>400.73</td>
+     </tr>
+     <tr>
+       <td><a href="/game.html?puzzle=vincentpuzzle">vincentpuzzle</a></td>
+       <td>440.33</td>
+       <td>434.23</td>
+     </tr>
+     <tr>
+       <td><a href="/game.html?puzzle=howdy">howdy</a></td>
+       <td>540.33</td>
+       <td>540.33</td>
+     </tr>
+    </table>
   </div>
 </body>
 <script type="text/javascript" src="scripts/prng.js"></script>
