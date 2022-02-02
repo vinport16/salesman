@@ -3,10 +3,12 @@ var canvasparent = document.getElementById("canvasparent");
 var ctx = canvas.getContext('2d');
 var current_distance = document.getElementById("distance");
 var bestscore = document.getElementById("best");
+var beatscore = document.getElementById("beat");
 var clearbutton = document.getElementById("clear");
 var restorebutton = document.getElementById("restore");
 const alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','@','#','$','%','^','&','*','<','>','?','|'];
 const puzzleName = (new URLSearchParams(window.location.search)).get('puzzle');
+var scoreToBeat = getBestScoreFromServer(puzzleName);
 const seed = puzzleName.hashCode();
 const rng = new PRNG(seed);
 const canvas_height = 85; // in vh (from style.css)
@@ -88,6 +90,10 @@ var linestate = {
       this.beststate = [...this.line];
       // write to local storage
       writeBestScoreToStorage(puzzleName, length, attemptstring);
+      if(length < scoreToBeat || scoreToBeat == null){
+        sendBestScoreToServer(puzzleName, length, attemptstring);
+        flashToBeatScore(round(length));
+      }
     }
     restorebutton.disabled = false;
   },
@@ -188,6 +194,13 @@ function flashScore(newbest){
   bestscore.classList.add("fading");
 }
 
+function flashToBeatScore(tobeat){
+  beatscore.innerText = tobeat;
+	beatscore.classList.remove("fading");
+  beatscore.offsetWidth;
+  beatscore.classList.add("fading");
+}
+
 var adjust_canvas = function(){
   canvas.width = canvas.parentElement.clientWidth;
   canvas.height = canvas.parentElement.clientHeight;
@@ -229,6 +242,11 @@ for(let i = 0; i < numdots; i++){
     drawState(linestate, dots);
   }
   canvasparent.appendChild(dot);
+}
+
+// write score to beat
+if(scoreToBeat != null){
+  beatscore.innerText = round(scoreToBeat);
 }
 
 // check if a best score was stored

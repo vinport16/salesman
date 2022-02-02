@@ -1,25 +1,79 @@
 var table = document.getElementById("puzzleList");
 
+let rowdat = [];
 
 for(let i = 0; i < puzzledata.length; i++){
+  rowdat.push({name: puzzledata[i].name,
+  yourbest: readBestScoreFromStorage(puzzledata[i].name).score,
+  best: puzzledata[i].best});
+}
+
+// determine display order bucket
+function rowscore(row){
+  if(row.best == null){
+    return(0); // last
+  }else if(row.yourbest == null){
+    return(3); // first
+  }else if(row.yourbest > row.best){
+    return(2);
+  }else{
+    // you have achieved the best score
+    return(1);
+  }
+};
+
+rowdat.sort((a, b) => {
+  return(a.name.localeCompare(b.name));
+}).sort((a, b) => {
+  let delta = rowscore(b) - rowscore(a);
+  if(delta == 0){
+    // sort secondarily on score difference
+    if(a.yourbest == null || b.yourbest == null){
+      return(0);
+    }
+    let adif = a.yourbest - a.best;
+    let bdif = b.yourbest - b.best;
+    // if row difference is zero, list larger scores first
+    if(bdif - adif == 0){
+      return(b.best - a.best);
+    }else{
+      return(bdif - adif);
+    }
+  }else{
+    return(delta);
+  }
+});
+
+for(let i = 0; i < rowdat.length; i++){
   let row = document.createElement("tr");
 
   let name = document.createElement("td");
   let link = document.createElement("a");
-  link.innerText = puzzledata[i].name;
-  link.href = "/game.html?puzzle=" + puzzledata[i].name;
+  link.innerText = rowdat[i].name;
+  link.href = "/game.html?puzzle=" + rowdat[i].name;
   name.appendChild(link);
   row.appendChild(name);
 
   let yourbest = document.createElement("td");
-  let yourbestscore = readBestScoreFromStorage(puzzledata[i].name).score;
+  let yourbestscore = rowdat[i].yourbest;
   yourbest.innerText = round(yourbestscore) || "";
   row.appendChild(yourbest);
 
   let best = document.createElement("td");
-  let bestscore = puzzledata[i].best;
+  let bestscore = rowdat[i].best;
   best.innerText = round(bestscore) || "";
   row.appendChild(best);
+
+  if(rowdat[i].best && rowdat[i].yourbest){
+    let diff = document.createElement("td");
+    diff.innerText = "∆ "+round(rowdat[i].yourbest - rowdat[i].best);
+    row.appendChild(diff);
+    if(rowdat[i].best >= rowdat[i].yourbest){
+      row.classList.add("completed");
+    }else{
+      row.classList.add("attempted");
+    }
+  }
 
   table.children[0].appendChild(row);
 }

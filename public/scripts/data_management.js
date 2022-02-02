@@ -13,7 +13,6 @@ function readData(key){
 }
 
 function current(version){
-  console.log(version, !version, version == current_version);
   if(!version){
     return false;
   }
@@ -38,4 +37,27 @@ function writeBestScoreToStorage(gameName, score, sequence_string){
     let newBest = {score: score, sequence: sequence_string, version: current_version};
     writeData(gameName, newBest);
   }
+}
+
+function getBestScoreFromServer(gameName){
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.open( "GET", "/bestscore?puzzle="+gameName, false ); // false for synchronous request
+  xmlHttp.send();
+  let score = xmlHttp.responseText
+  if(score == "null" || score == "NO RECORD"){
+    return(null);
+  }else{
+    return(parseFloat(score));
+  }
+}
+
+function sendBestScoreToServer(gameName, score, sequence_string){
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", "/newbest", true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({
+      name: gameName,
+      score: score,
+      sequence: sequence_string,
+  }));
 }

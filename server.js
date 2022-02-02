@@ -35,12 +35,22 @@ function updatePuzzleData(puzzles){
       console.log("dat/puzzledata.js updated");
     }
   });
-}
+};
+function updateStorage(puzzles){
+  fs.writeFile("dat/names.json", JSON.stringify(puzzles), { flag: 'w' }, function(err) {
+    if(err) {
+      console.log(err);
+    } else {
+      console.log("dat/names.js updated");
+    }
+  });
+};
 
 var puzzles = JSON.parse(fs.readFileSync('dat/names.json'));
 updatePuzzleData(puzzles);
 
-app.use(express.static('public'))
+app.use(express.static('public'));
+app.use(express.json({ extended: true }));
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + 'public/index.html');
@@ -58,4 +68,24 @@ app.get('/bestscore', function(req, res){
 
 app.get('/puzzledata.js', function(req, res){
   res.sendFile(__dirname + '/dat/puzzledata.js');
+});
+
+app.post('/newbest', function(req, res){
+  let name = req.body.name;
+  let score = req.body.score;
+  let sequence = req.body.sequence;
+
+  // !!! TODO: VALIDATION !!!
+
+  if(puzzles[name] != null && (puzzles[name].best == null || puzzles[name].best > score)){
+    puzzles[name].best = score;
+    puzzles[name].sequence = sequence;
+    puzzles[name].overthrows += 1;
+    puzzles[name].date = Date.now();
+    res.send("Congratulations! You have beat the high score for "+name+".");
+    updateStorage(puzzles);
+    updatePuzzleData(puzzles);
+  }else{
+    res.send("Rejected");
+  }
 });

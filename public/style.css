@@ -93,7 +93,7 @@ canvas {
   display: inline;
 }
 
-.info {
+.menu {
   font-size: inherit;
   width: 15vh;
   height: 5vh;
@@ -132,6 +132,14 @@ canvas {
         color: black;
         font-weight: regular;
     }
+}
+
+tr.completed {
+  background-color: #DDFFDD;
+}
+
+tr.attempted {
+  background-color: #FFEEDD;
 }
 
 
