@@ -3,9 +3,11 @@ var table = document.getElementById("puzzleList");
 let rowdat = [];
 
 for(let i = 0; i < puzzledata.length; i++){
+  let bs = readBestScoreFromStorage(puzzledata[i].name);
   rowdat.push({name: puzzledata[i].name,
-  yourbest: readBestScoreFromStorage(puzzledata[i].name).score,
-  best: puzzledata[i].best});
+  yourbest: bs.score,
+  best: puzzledata[i].best,
+  crown: bs.crown});
 }
 
 // determine display order bucket
@@ -64,15 +66,19 @@ for(let i = 0; i < rowdat.length; i++){
   best.innerText = round(bestscore) || "";
   row.appendChild(best);
 
+  let diff = document.createElement("td");
   if(rowdat[i].best && rowdat[i].yourbest){
-    let diff = document.createElement("td");
     diff.innerText = "∆ "+round(rowdat[i].yourbest - rowdat[i].best);
-    row.appendChild(diff);
     if(rowdat[i].best >= rowdat[i].yourbest){
       row.classList.add("completed");
     }else{
       row.classList.add("attempted");
     }
+  }
+  row.appendChild(diff);
+
+  if(rowdat[i].crown){
+    diff.innerText = diff.innerText + " 👑";
   }
 
   table.children[0].appendChild(row);

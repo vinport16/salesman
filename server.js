@@ -82,10 +82,12 @@ app.post('/newbest', function(req, res){
     puzzles[name].sequence = sequence;
     puzzles[name].overthrows += 1;
     puzzles[name].date = Date.now();
+    res.status(200);
     res.send("Congratulations! You have beat the high score for "+name+".");
     updateStorage(puzzles);
     updatePuzzleData(puzzles);
   }else{
+    res.status(400);
     res.send("Rejected");
   }
 });

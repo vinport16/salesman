@@ -51,10 +51,26 @@ function getBestScoreFromServer(gameName){
   }
 }
 
+function crown(gameName){
+  let score_info = readBestScoreFromStorage(gameName);
+  score_info.crown = true;
+  writeData(gameName, score_info);
+}
+
 function sendBestScoreToServer(gameName, score, sequence_string){
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "/newbest", true);
   xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.onload = function(e) {
+    if(xhr.readyState === 4){
+      if(xhr.status === 200){
+        console.log("GOOOD DATA");
+        crown(gameName);
+      }else{
+        console.log("BAD DATA. REJECtED");
+      }
+    }
+  }
   xhr.send(JSON.stringify({
       name: gameName,
       score: score,
