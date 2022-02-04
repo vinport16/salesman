@@ -126,11 +126,13 @@ var round = function(f){
   return Math.round(f * 100) / 100
 }
 
+var world2canvas = function(p){
+  return multiply({x:p.x, y:worldheight-p.y}, scale_factor);
+}
+
 var connect_dots = function(d1, d2){
-  let v1 = {x:d1.x, y:worldheight-d1.y};
-  let v2 = {x:d2.x, y:worldheight-d2.y};
-  v1 = multiply(v1, scale_factor);
-  v2 = multiply(v2, scale_factor);
+  v1 = world2canvas(d1);
+  v2 = world2canvas(d2);
   drawLineWidth(v1, v2, lineColor, lineWidth);
 }
 
@@ -240,8 +242,100 @@ for(let i = 0; i < numdots; i++){
   dot.onclick = function(){
     linestate.click(dots[i]);
     drawState(linestate, dots);
+    console.log("click");
+  }
+  dot.onmousedown = function(){
+    beginTrackingDragDesktop(dots[i]);
+    console.log("mousedown");
+  }
+  dot.ontouchstart = function(){
+    console.log("touchstart");
+    beginTrackingDragMobile(dots[i]);
   }
   canvasparent.appendChild(dot);
+}
+
+function beginTrackingDragDesktop(dot){
+  let p1 = world2canvas(dot);
+  document.onmousemove = function(e){
+    let p2 = doc2canvas({x:e.clientX, y:e.clientY});
+    drawState(linestate, dots);
+    drawLineWidth(p1, p2, "red", 10);
+  }
+  document.onmouseup = function(){
+    document.onmousemove = null;
+  }
+  document.onmouseleave = function(){
+    document.onmousemove = null;
+  }
+}
+function beginTrackingDragMobile(dot){
+  let trackdot = dot;
+  document.ontouchmove = function(e){
+    let p2 = doc2canvas({x:e.touches[0].pageX, y:e.touches[0].pageY});
+    trackdot = dragged(trackdot, p2);
+    drawState(linestate, dots);
+    drawLineWidth(world2canvas(trackdot), p2, "red", 10);
+  }
+  document.ontouchend = function(){
+    document.ontouchmove = null;
+  }
+  document.ontouchcancelled = function(){
+    document.ontouchmove = null;
+  }
+}
+
+function dragged(from, p){
+  if(linestate.line[linestate.line.length-1] == from){
+    let dot_touched = touched_dot(p);
+
+    if(linestate.line.length > 1 && !touching(p, from) && going_back(from, p, linestate.line[linestate.line.length-2])){
+      linestate.line.pop();
+      return(linestate.line[linestate.line.length-1]);
+    }
+    if(dot_touched){
+      if(dot_touched != from){
+        if(linestate.line.includes(dot_touched)){
+          console.log("dont connect");
+        }else{
+          linestate.line.push(dot_touched);
+          return(dot_touched);
+        }
+      }else{
+        // draw nothing
+      }
+    }
+  }
+  return from;
+}
+
+function going_back(from, to, previus){
+  let fp = world2canvas(from);
+  let pp = world2canvas(previus);
+  let a = angle(to, fp, pp);
+  return(Math.abs(a) < 15);
+}
+
+function close_range(p, dot){
+  return(!touching(p, dot) && distance(world2canvas(dot), p) < (2 * dotradius * scale_factor));
+}
+
+function touching(p, dot){
+  return(distance(world2canvas(dot), p) < (dotradius * scale_factor));
+}
+
+function touched_dot(p){
+  for(let i = 0; i < dots.length; i++){
+    if(touching(p, dots[i])){
+      return dots[i];
+    }
+  }
+  return null;
+}
+
+function doc2canvas(p){
+  let offset = canvas.getBoundingClientRect();
+  return subtract(p, offset);
 }
 
 // write score to beat

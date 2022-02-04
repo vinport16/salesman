@@ -6,13 +6,15 @@
 </head>
 <body>
   <meta name="viewport" content="width=device-width, user-scalable=no" charset="UTF-8">
-  <div id="canvasparent" class="graphcontainer">
-    <canvas id="canvas"></canvas>
-  </div>
   <div id="dock" class="dock">
     <span class="label">distance:</span> <span id='distance' class='distance'>0</span><br>
     <span class="label">you:</span> <span id='best' class='best'></span>
     <span class="label">best:</span> <span id='beat' class='beat'></span><br>
+  </div>
+  <div id="canvasparent" class="graphcontainer">
+    <canvas id="canvas"></canvas>
+  </div>
+  <div id="dock" class="dock">
     <div class="buttonbox">
       <button id="clear" type="button" class="clear">clear</button>
       <button id="info" type="button" class="menu" onclick="location.href='/'";>menu</button>
@@ -25,4 +27,8 @@
 <script type="text/javascript" src="scripts/vectors.js"></script>
 <script type="text/javascript" src="scripts/data_management.js"></script>
 <script type="text/javascript" src="scripts/script.js"></script>
+<script>
+// no scrolling allowed!
+document.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive:false });
+</script>
 </html>
