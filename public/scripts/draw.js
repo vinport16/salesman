@@ -30,6 +30,7 @@ function drawLine(v1, v2, stroke){
 
 function drawLineWidth(v1, v2, stroke, width){
   ctx.beginPath();
+  ctx.lineCap = "round";
   ctx.moveTo(v1.x,v1.y);
   ctx.lineTo(v2.x,v2.y);
   ctx.lineWidth = width;
