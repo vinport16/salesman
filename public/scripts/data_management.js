@@ -1,4 +1,4 @@
-const current_version = 1;
+const current_version = 2;
 
 // convert value to JSON before storage
 function writeData(key, value){
@@ -54,6 +54,12 @@ function getBestScoreFromServer(gameName){
 function crown(gameName){
   let score_info = readBestScoreFromStorage(gameName);
   score_info.crown = true;
+  writeData(gameName, score_info);
+}
+
+function uncrown(gameName){
+  let score_info = readBestScoreFromStorage(gameName);
+  score_info.crown = false;
   writeData(gameName, score_info);
 }
 

@@ -4,10 +4,17 @@ let rowdat = [];
 
 for(let i = 0; i < puzzledata.length; i++){
   let bs = readBestScoreFromStorage(puzzledata[i].name);
+  if(bs.crown && !about_equal(bs.score, puzzledata[i].best)){
+    uncrown(puzzledata[i].name);
+  }
   rowdat.push({name: puzzledata[i].name,
   yourbest: bs.score,
   best: puzzledata[i].best,
   crown: bs.crown});
+}
+
+function about_equal(a, b){
+  return(Math.abs(a - b) < 0.00001);
 }
 
 // determine display order bucket
@@ -16,7 +23,7 @@ function rowscore(row){
     return(0); // last
   }else if(row.yourbest == null){
     return(3); // first
-  }else if(row.yourbest > row.best){
+  }else if(row.yourbest > row.best && !about_equal(row.yourbest, row.best)){
     return(2);
   }else{
     // you have achieved the best score

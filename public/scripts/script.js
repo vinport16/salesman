@@ -6,18 +6,24 @@ var bestscore = document.getElementById("best");
 var beatscore = document.getElementById("beat");
 var clearbutton = document.getElementById("clear");
 var restorebutton = document.getElementById("restore");
-const alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','@','#','$','%','^','&','*','<','>','?','|'];
+const clickSound = new Audio();
+const unclickSound = new Audio();
+clickSound.autoplay = true;
+unclickSound.autoplay = true;
+clickSound.volume = 0.2;
+unclickSound.volume = 0.2;
+const alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','!','@','#','$','%','^','&','*','<','>','?','|','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0'];
 const puzzleName = (new URLSearchParams(window.location.search)).get('puzzle');
 var scoreToBeat = getBestScoreFromServer(puzzleName);
 const seed = puzzleName.hashCode();
 const rng = new PRNG(seed);
-const canvas_height = 85; // in vh (from style.css)
+const canvas_height = 75; // in vh (from style.css)
 const canvas_width = 50;   // in vh (from style.css)
 const worldwidth = canvas_width * 2;
 const worldheight = canvas_height * 2;
-const dotradius = 6;
+const dotradius = 4; // = diameter of dot in vh
 var scale_factor = canvas.width/worldwidth; // reset in adjust_canvas
-var lineWidth = canvas.width/50; // reset in adjust_canvas
+var lineWidth = null; // set in adjust_canvas
 const lineColor = "#1982C4";
 const dotInPath = "inpath";
 const dotSolo = "solo";
@@ -28,8 +34,8 @@ const dotEnd = "end";
 // that would make it impossible to place another dot without overlapping.
 // calculated by using https://www.engineeringtoolbox.com/circles-within-rectangle-d_1905.html
 // with canvas height, width, and dotradius * 4 (dots can be 4 radius away and effectively
-// prevent a third dot from being placed between them) (28)
-const numdots = Math.floor(rng.next(19,26));
+// prevent a third dot from being placed between them) (54)
+const numdots = Math.floor(rng.next(45,50));
 //numdots = 5;
 var dots = [];
 var linestate = {
@@ -68,10 +74,14 @@ var linestate = {
     if(this.line.length == numdots){
       this.register_solution();
     }
+    tactileClick();
+    playClickSound();
   },
   pop: function(){
     let popped = this.line.pop();
     current_distance.innerText = round(this.current_length());
+    tactileClick();
+    playUnclickSound();
     return(popped);
   },
   toString: function(){
@@ -116,6 +126,29 @@ var linestate = {
     return l;
   },
 };
+
+function tactileClick(){
+  if(window.navigator.vibrate){
+    window.navigator.vibrate(100);
+  }
+}
+
+function setupSound(){
+  clickSound.src = "data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV";
+  unclickSound.src = clickSound.src;
+  document.body.removeEventListener("click", setupSound);
+  console.log("All set");
+}
+
+document.body.addEventListener("click", setupSound)
+
+function playClickSound(){
+  clickSound.src = 'sounds/click.mp3';
+}
+
+function playUnclickSound(){
+  unclickSound.src = 'sounds/unclick.mp3';
+}
 
 clearbutton.onclick = function(){
   linestate.line = [];
@@ -215,7 +248,7 @@ var adjust_canvas = function(){
   canvas.width = canvas.parentElement.clientWidth;
   canvas.height = canvas.parentElement.clientHeight;
   scale_factor = canvas.width/worldwidth;
-  lineWidth = canvas.width/18;
+  lineWidth = canvas.width/26;
   drawState(linestate, dots);
 }
 adjust_canvas();

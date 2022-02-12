@@ -10,7 +10,7 @@ console.log("listening on port "+port);
 if (!fs.existsSync('./dat')){
     fs.mkdirSync('./dat');
 }
-fs.writeFile("dat/names.json", `{"Michael": {"best": null, "sequence": null, "attempts": 0, "overthrows": 0, "date": null }}`, { flag: 'wx' }, function(err) {
+fs.writeFile("dat/names.json", `{"Cleveland": {"best": null, "sequence": null, "attempts": 0, "overthrows": 0, "date": null }}`, { flag: 'wx' }, function(err) {
   if(err) {
     if(err.code == 'EEXIST'){
       console.log("dat/names.json exists");

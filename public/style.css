@@ -15,7 +15,7 @@ body {
 
 .graphcontainer {
   width: 50vh;
-  height: 85vh;
+  height: 75vh;
   margin: auto;
   padding: 0;
   position: relative;
@@ -26,8 +26,8 @@ canvas {
 }
 
 .dot {
-  width: 6vh;
-  height: 6vh;
+  width: 4vh;
+  height: 4vh;
   display: block;
   border-radius: 50%;
 }
